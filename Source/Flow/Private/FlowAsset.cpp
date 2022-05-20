@@ -1,3 +1,5 @@
+// Copyright https://github.com/MothCocoon/FlowGraph/graphs/contributors
+
 #include "FlowAsset.h"
 #include "FlowSettings.h"
 #include "FlowSubsystem.h"
@@ -8,6 +10,7 @@
 #include "Nodes/Route/FlowNode_Finish.h"
 #include "Nodes/Route/FlowNode_SubGraph.h"
 
+#include "Engine/World.h"
 #include "Serialization/MemoryReader.h"
 #include "Serialization/MemoryWriter.h"
 
@@ -253,7 +256,7 @@ void UFlowAsset::SetInspectedInstance(const FName& NewInspectedInstanceName)
 		}
 	}
 
-	BroadcastRegenerateToolbars();
+	BroadcastDebuggerRefresh();
 }
 #endif
 
@@ -324,11 +327,13 @@ void UFlowAsset::PreStartFlow()
 #if WITH_EDITOR
 	if (TemplateAsset->ActiveInstances.Num() == 1)
 	{
+		// this instance is the only active one, set it directly as Inspected Instance
 		TemplateAsset->SetInspectedInstance(GetDisplayName());
 	}
 	else
 	{
-		TemplateAsset->BroadcastRegenerateToolbars();
+		// request to refresh list to show newly created instance
+		TemplateAsset->BroadcastDebuggerRefresh();
 	}
 #endif
 }
@@ -459,13 +464,13 @@ UFlowAsset* UFlowAsset::GetMasterInstance() const
 FFlowAssetSaveData UFlowAsset::SaveInstance(TArray<FFlowAssetSaveData>& SavedFlowInstances)
 {
 	FFlowAssetSaveData AssetRecord;
-
-	//FSoftObjectPtr<UFlowAsset> FlowAsset;
-	//FArchiveUObject::SerializeSoftObjectPtr(AssetRecord.AssetClass, FlowAsset);
+	AssetRecord.WorldName = IsBoundToWorld() ? GetWorld()->GetName() : FString();
 	AssetRecord.InstanceName = GetName();
 
+	// opportunity to collect data before serializing asset
 	OnSave();
 
+	// iterate SubGraphs
 	for (const TPair<FGuid, UFlowNode*>& Node : Nodes)
 	{
 		if (Node.Value && Node.Value->ActivationState == EFlowNodeState::Active)
@@ -487,11 +492,14 @@ FFlowAssetSaveData UFlowAsset::SaveInstance(TArray<FFlowAssetSaveData>& SavedFlo
 		}
 	}
 
+	// serialize asset
 	FMemoryWriter MemoryWriter(AssetRecord.AssetData, true);
 	FFlowArchive Ar(MemoryWriter);
 	Serialize(Ar);
 
+	// write archive to SaveGame
 	SavedFlowInstances.Emplace(AssetRecord);
+
 	return AssetRecord;
 }
 
@@ -533,4 +541,9 @@ void UFlowAsset::OnSave_Implementation()
 
 void UFlowAsset::OnLoad_Implementation()
 {
+}
+
+bool UFlowAsset::IsBoundToWorld_Implementation()
+{
+	return true;
 }

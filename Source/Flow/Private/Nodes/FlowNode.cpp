@@ -1,3 +1,5 @@
+// Copyright https://github.com/MothCocoon/FlowGraph/graphs/contributors
+
 #include "Nodes/FlowNode.h"
 
 #include "FlowAsset.h"
@@ -25,6 +27,9 @@ UFlowNode::UFlowNode(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 #if WITH_EDITOR
 	, GraphNode(nullptr)
+	, bCanDelete(true)
+	, bCanDuplicate(true)
+	, bNodeDeprecated(false)
 #endif
 	, bPreloaded(false)
 	, ActivationState(EFlowNodeState::NeverActivated)
@@ -235,6 +240,28 @@ TSet<UFlowNode*> UFlowNode::GetConnectedNodes() const
 		Result.Emplace(GetFlowAsset()->GetNode(Connection.Value.NodeGuid));
 	}
 	return Result;
+}
+
+bool UFlowNode::IsInputConnected(const FName& PinName) const
+{
+	if (GetFlowAsset())
+	{
+		for (const TPair<FGuid, UFlowNode*>& Pair : GetFlowAsset()->Nodes)
+		{
+			if (Pair.Value)
+			{
+				for (const TPair<FName, FConnectedPin>& Connection : Pair.Value->Connections)
+				{
+					if (Connection.Value.NodeGuid == NodeGuid && Connection.Value.PinName == PinName)
+					{
+						return true;
+					}
+				}
+			}
+		}
+	}
+
+	return false;
 }
 
 bool UFlowNode::IsOutputConnected(const FName& PinName) const
@@ -555,7 +582,7 @@ FString UFlowNode::GetProgressAsString(float Value)
 void UFlowNode::LogError(FString Message, const EFlowOnScreenMessageType OnScreenMessageType) const
 {
 	const FString TemplatePath = GetFlowAsset()->TemplateAsset->GetPathName();
-	Message += TEXT(" in node ") + GetName() + TEXT(", asset ") + FPaths::GetPath(TemplatePath) + TEXT("/") + FPaths::GetBaseFilename(TemplatePath);
+	Message += TEXT(" --- node ") + GetName() + TEXT(", asset ") + FPaths::GetPath(TemplatePath) / FPaths::GetBaseFilename(TemplatePath);
 
 	if (OnScreenMessageType == EFlowOnScreenMessageType::Permanent)
 	{

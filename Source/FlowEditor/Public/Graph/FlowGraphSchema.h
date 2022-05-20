@@ -1,3 +1,5 @@
+// Copyright https://github.com/MothCocoon/FlowGraph/graphs/contributors
+
 #pragma once
 
 #include "EdGraph/EdGraphSchema.h"
@@ -39,6 +41,7 @@ public:
 	static UClass* GetAssignedGraphNodeClass(const UClass* FlowNodeClass);
 
 private:
+	static bool IsClassContained(const TArray<TSubclassOf<class UFlowNode>> Classes, const UClass* Class);
 	static void GetFlowNodeActions(FGraphActionMenuBuilder& ActionMenuBuilder, UClass* AssetClass, const FString& CategoryName);
 	static void GetCommentAction(FGraphActionMenuBuilder& ActionMenuBuilder, const UEdGraph* CurrentGraph = nullptr);
 
@@ -48,7 +51,7 @@ private:
 	static void OnBlueprintCompiled();
 
 	static void GatherFlowNodes();
-	static void OnHotReload(bool bWasTriggeredAutomatically);
+	static void OnHotReload(EReloadCompleteReason ReloadCompleteReason);
 
 	static void OnAssetAdded(const FAssetData& AssetData);
 	static void AddAsset(const FAssetData& AssetData, const bool bBatch);

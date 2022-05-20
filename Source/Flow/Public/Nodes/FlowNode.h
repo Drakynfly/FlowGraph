@@ -1,3 +1,5 @@
+// Copyright https://github.com/MothCocoon/FlowGraph/graphs/contributors
+
 #pragma once
 
 #include "CoreMinimal.h"
@@ -28,6 +30,7 @@ class FLOW_API UFlowNode : public UObject, public IVisualLoggerDebugSnapshotInte
 	friend class SFlowGraphNode;
 	friend class UFlowAsset;
 	friend class UFlowGraphNode;
+	friend class UFlowGraphSchema;
 
 //////////////////////////////////////////////////////////////////////////
 // Node
@@ -43,6 +46,16 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "FlowNode")
 	EFlowNodeStyle NodeStyle;
+
+	uint8 bCanDelete : 1;
+	uint8 bCanDuplicate : 1;
+
+	UPROPERTY(EditDefaultsOnly, Category = "FlowNode")
+	bool bNodeDeprecated;
+	
+	// If this node is deprecated, it might be replaced by another node
+	UPROPERTY(EditDefaultsOnly, Category = "FlowNode")
+	TSubclassOf<UFlowNode> ReplacedBy;
 
 public:
 	FFlowNodeEvent OnReconstructionRequested;
@@ -161,6 +174,9 @@ public:
 	void SetConnections(const TMap<FName, FConnectedPin>& InConnections) { Connections = InConnections; }
 	FConnectedPin GetConnection(const FName OutputName) const { return Connections.FindRef(OutputName); }
 	TSet<UFlowNode*> GetConnectedNodes() const;
+
+	UFUNCTION(BlueprintPure, Category= "FlowNode")
+	bool IsInputConnected(const FName& PinName) const;
 
 	UFUNCTION(BlueprintPure, Category= "FlowNode")
 	bool IsOutputConnected(const FName& PinName) const;

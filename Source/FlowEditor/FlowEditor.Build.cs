@@ -1,3 +1,5 @@
+// Copyright https://github.com/MothCocoon/FlowGraph/graphs/contributors
+
 using UnrealBuildTool;
 
 public class FlowEditor : ModuleRules
@@ -14,6 +16,7 @@ public class FlowEditor : ModuleRules
         PrivateDependencyModuleNames.AddRange(new[]
         {
             "ApplicationCore",
+            "AssetSearch",
             "AssetTools",
             "BlueprintGraph",
             "ClassViewer",
@@ -22,10 +25,13 @@ public class FlowEditor : ModuleRules
             "CoreUObject",
             "DetailCustomizations",
             "DeveloperSettings",
+            "EditorFramework",
             "EditorStyle",
             "Engine",
             "GraphEditor",
             "InputCore",
+            "Json",
+            "JsonUtilities",
             "KismetWidgets",
             "LevelEditor",
             "MovieScene",

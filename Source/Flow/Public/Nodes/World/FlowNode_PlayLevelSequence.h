@@ -1,3 +1,5 @@
+// Copyright https://github.com/MothCocoon/FlowGraph/graphs/contributors
+
 #pragma once
 
 #include "EngineDefines.h"
@@ -32,6 +34,14 @@ class FLOW_API UFlowNode_PlayLevelSequence : public UFlowNode
 
 	UPROPERTY(EditAnywhere, Category = "Sequence")
 	FMovieSceneSequencePlaybackSettings PlaybackSettings;
+
+	UPROPERTY(EditAnywhere, Category = "Sequence")
+	bool bPlayReverse;
+	
+	// if True, Play Rate will by multiplied by Custom Time Dilation
+	// set in the actor that owns Root Flow
+	UPROPERTY(EditAnywhere, Category = "Sequence")
+	bool bApplyOwnerTimeDilation;
 	
 	UPROPERTY(EditAnywhere, Category = "Sequence")
 	FLevelSequenceCameraSettings CameraSettings;
@@ -42,6 +52,9 @@ protected:
 
 	UPROPERTY()
 	UFlowLevelSequencePlayer* SequencePlayer;
+
+	// Play Rate set by the user in PlaybackSettings
+	float CachedPlayRate;
 
 	UPROPERTY(SaveGame)
 	float StartTime;
@@ -63,6 +76,7 @@ public:
 	virtual void PreloadContent() override;
 	virtual void FlushContent() override;
 
+	virtual void InitializeInstance() override;
 	void CreatePlayer();
 
 protected:
