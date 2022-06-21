@@ -8,7 +8,6 @@ UFlowGraphSettings::UFlowGraphSettings(const FObjectInitializer& ObjectInitializ
 	: Super(ObjectInitializer)
 	, bExposeFlowAssetCreation(true)
 	, bExposeFlowNodeCreation(true)
-	, bShowAssetToolbarAboveLevelEditor(true)
 	, FlowAssetCategoryName(LOCTEXT("FlowAssetCategory", "Flow"))
 	, WorldAssetClass(UFlowAsset::StaticClass())
 	, bShowDefaultPinNames(false)

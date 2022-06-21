@@ -7,7 +7,6 @@
 #include "Asset/FlowAssetIndexer.h"
 #include "Graph/FlowGraphConnectionDrawingPolicy.h"
 #include "Graph/FlowGraphSettings.h"
-#include "LevelEditor/SLevelEditorFlow.h"
 #include "MovieScene/FlowTrackEditor.h"
 #include "Nodes/AssetTypeActions_FlowNodeBlueprint.h"
 #include "Nodes/Customizations/FlowNode_Details.h"
@@ -45,17 +44,6 @@ void FFlowEditorModule::StartupModule()
 
 	// register visual utilities
 	FEdGraphUtilities::RegisterVisualPinConnectionFactory(MakeShareable(new FFlowGraphConnectionDrawingPolicyFactory));
-
-	// add Flow Toolbar
-	if (UFlowGraphSettings::Get()->bShowAssetToolbarAboveLevelEditor)
-	{
-		if (FLevelEditorModule* LevelEditorModule = FModuleManager::GetModulePtr<FLevelEditorModule>(TEXT("LevelEditor")))
-		{
-			const TSharedPtr<FExtender> MenuExtender = MakeShareable(new FExtender());
-			MenuExtender->AddToolBarExtension("Play", EExtensionHook::After, nullptr, FToolBarExtensionDelegate::CreateRaw(this, &FFlowEditorModule::CreateFlowToolbar));
-			LevelEditorModule->GetToolBarExtensibilityManager()->AddExtender(MenuExtender);
-		}
-	}
 
 	// register Flow sequence track
 	ISequencerModule& SequencerModule = FModuleManager::Get().LoadModuleChecked<ISequencerModule>("Sequencer");
@@ -111,7 +99,7 @@ void FFlowEditorModule::ShutdownModule()
 			}
 		}
 	}
-	
+
 	FModuleManager::Get().OnModulesChanged().Remove(ModulesChangedHandle);
 }
 
@@ -179,14 +167,6 @@ void FFlowEditorModule::RegisterAssetIndexers() const
 	//IAssetSearchModule::Get().RegisterAssetIndexer(UFlowAsset::StaticClass(), MakeUnique<FFlowAssetIndexer>());
 }
 
-void FFlowEditorModule::CreateFlowToolbar(FToolBarBuilder& ToolbarBuilder) const
-{
-	ToolbarBuilder.BeginSection("Flow");
-	{
-		ToolbarBuilder.AddWidget(SNew(SLevelEditorFlow));
-	}
-	ToolbarBuilder.EndSection();
-}
 
 TSharedRef<FFlowAssetEditor> FFlowEditorModule::CreateFlowAssetEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, UFlowAsset* FlowAsset)
 {

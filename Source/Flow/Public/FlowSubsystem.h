@@ -28,19 +28,20 @@ class FLOW_API UFlowSubsystem : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	UFlowSubsystem();
 
-private:	
+private:
 	friend class UFlowAsset;
 	friend class UFlowComponent;
+	friend class UFlowGraphComponent;
 	friend class UFlowNode_SubGraph;
 
 	// All asset templates with active instances
 	UPROPERTY()
 	TArray<UFlowAsset*> InstancedTemplates;
 
-	// Assets instanced by object from another system, i.e. World Settings or Player Controller
+	// Assets instanced by object from another system, i.e. Game State or Player Controller
 	UPROPERTY()
 	TMap<TWeakObjectPtr<UObject>, UFlowAsset*> RootInstances;
 
@@ -85,7 +86,7 @@ public:
 	// Returns asset instanced by object from another system like World Settings
 	UFUNCTION(BlueprintPure, Category = "FlowSubsystem")
     UFlowAsset* GetRootFlow(UObject* Owner) const { return RootInstances.FindRef(Owner); }
-	
+
 	// Returns assets instanced by object from another system like World Settings
 	UFUNCTION(BlueprintPure, Category = "FlowSubsystem")
     TMap<UObject*, UFlowAsset*> GetRootInstances() const;
@@ -93,9 +94,9 @@ public:
 	// Returns assets instanced by Sub Graph nodes
 	UFUNCTION(BlueprintPure, Category = "FlowSubsystem")
     TMap<UFlowNode_SubGraph*, UFlowAsset*> GetInstancedSubFlows() const { return InstancedSubFlows; }
-	
+
 	virtual UWorld* GetWorld() const override;
-	
+
 //////////////////////////////////////////////////////////////////////////
 // SaveGame
 
@@ -110,7 +111,7 @@ public:
 
 	virtual void LoadRootFlow(UObject* Owner, UFlowAsset* FlowAsset, const FString& SavedAssetInstanceName);
 	virtual void LoadSubFlow(UFlowNode_SubGraph* SubGraphNode, const FString& SavedAssetInstanceName);
-	
+
 	UFUNCTION(BlueprintPure, Category = "FlowSubsystem")
 	UFlowSaveGame* GetLoadedSaveGame() const { return LoadedSaveGame; }
 
@@ -125,7 +126,7 @@ protected:
 	virtual void RegisterComponent(UFlowComponent* Component);
 	virtual void OnIdentityTagAdded(UFlowComponent* Component, const FGameplayTag& AddedTag);
 	virtual void OnIdentityTagsAdded(UFlowComponent* Component, const FGameplayTagContainer& AddedTags);
-	
+
 	virtual void UnregisterComponent(UFlowComponent* Component);
 	virtual void OnIdentityTagRemoved(UFlowComponent* Component, const FGameplayTag& RemovedTag);
 	virtual void OnIdentityTagsRemoved(UFlowComponent* Component, const FGameplayTagContainer& RemovedTags);

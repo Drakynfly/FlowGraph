@@ -4,6 +4,7 @@
 
 #include "FlowAsset.h"
 #include "FlowComponent.h"
+#include "FlowGraphComponent.h"
 #include "FlowModule.h"
 #include "FlowSave.h"
 #include "FlowSettings.h"
@@ -29,7 +30,7 @@ bool UFlowSubsystem::ShouldCreateSubsystem(UObject* Outer) const
 	{
 		return false;
 	}
-	
+
 	// in this case, we simply create subsystem for every instance of the game
 	if (UFlowSettings::Get()->bCreateFlowSubsystemOnClients)
 	{
@@ -125,7 +126,7 @@ UFlowAsset* UFlowSubsystem::CreateSubFlow(UFlowNode_SubGraph* SubGraphNode, cons
 	{
 		// get instanced asset from map - in case it was already instanced by calling CreateSubFlow() with bPreloading == true
 		UFlowAsset* AssetInstance = InstancedSubFlows[SubGraphNode];
-		
+
 		AssetInstance->NodeOwningThisAssetInstance = SubGraphNode;
 		SubGraphNode->GetFlowAsset()->ActiveSubGraphs.Add(SubGraphNode, AssetInstance);
 
@@ -231,13 +232,13 @@ void UFlowSubsystem::OnGameSaved(UFlowSaveGame* SaveGame)
 			}
 		}
 	}
-	
+
 	// save Flow Graphs
 	for (const TPair<TWeakObjectPtr<UObject>, UFlowAsset*>& Pair : RootInstances)
 	{
 		if (Pair.Key.IsValid() && Pair.Value)
 		{
-			if (UFlowComponent* FlowComponent = Cast<UFlowComponent>(Pair.Key))
+			if (UFlowGraphComponent* FlowComponent = Cast<UFlowGraphComponent>(Pair.Key))
 			{
 				FlowComponent->SaveRootFlow(SaveGame->FlowInstances);
 			}

@@ -16,10 +16,6 @@
 
 UFlowComponent::UFlowComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
-	, RootFlow(nullptr)
-	, bAutoStartRootFlow(true)
-	, RootFlowMode(EFlowNetMode::Authority)
-	, bAllowMultipleInstances(true)
 {
 	PrimaryComponentTick.bCanEverTick = false;
 	PrimaryComponentTick.bStartWithTickEnabled = false;
@@ -53,17 +49,7 @@ void UFlowComponent::BeginPlay()
 
 		FlowSubsystem->RegisterComponent(this);
 
-		if (RootFlow)
-		{
-			if (bComponentLoadedFromSaveGame)
-			{
-				LoadRootFlow();
-			}
-			else if (bAutoStartRootFlow)
-			{
-				StartRootFlow();
-			}
-		}
+		PostRegister(bComponentLoadedFromSaveGame);
 	}
 }
 
@@ -71,7 +57,6 @@ void UFlowComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	if (UFlowSubsystem* FlowSubsystem = GetFlowSubsystem())
 	{
-		FlowSubsystem->FinishRootFlow(this, EFlowFinishPolicy::Keep);
 		FlowSubsystem->UnregisterComponent(this);
 	}
 
@@ -359,27 +344,6 @@ void UFlowComponent::OnRep_NotifyTagsFromAnotherComponent()
 	}
 }
 
-void UFlowComponent::StartRootFlow()
-{
-	if (RootFlow && IsFlowNetMode(RootFlowMode))
-	{
-		if (UFlowSubsystem* FlowSubsystem = GetFlowSubsystem())
-		{
-			VerifyIdentityTags();
-
-			FlowSubsystem->StartRootFlow(this, RootFlow, bAllowMultipleInstances);
-		}
-	}
-}
-
-void UFlowComponent::FinishRootFlow(const EFlowFinishPolicy FinishPolicy)
-{
-	if (UFlowSubsystem* FlowSubsystem = GetFlowSubsystem())
-	{
-		FlowSubsystem->FinishRootFlow(this, FinishPolicy);
-	}
-}
-
 UFlowAsset* UFlowComponent::GetRootFlowInstance()
 {
 	if (const UFlowSubsystem* FlowSubsystem = GetFlowSubsystem())
@@ -388,29 +352,6 @@ UFlowAsset* UFlowComponent::GetRootFlowInstance()
 	}
 
 	return nullptr;
-}
-
-void UFlowComponent::SaveRootFlow(TArray<FFlowAssetSaveData>& SavedFlowInstances)
-{
-	if (UFlowAsset* FlowAssetInstance = GetRootFlowInstance())
-	{
-		const FFlowAssetSaveData AssetRecord = FlowAssetInstance->SaveInstance(SavedFlowInstances);
-		SavedAssetInstanceName = AssetRecord.InstanceName;
-		return;
-	}
-
-	SavedAssetInstanceName = FString();
-}
-
-void UFlowComponent::LoadRootFlow()
-{
-	if (RootFlow && !SavedAssetInstanceName.IsEmpty() && GetFlowSubsystem())
-	{
-		VerifyIdentityTags();
-
-		GetFlowSubsystem()->LoadRootFlow(this, RootFlow, SavedAssetInstanceName);
-		SavedAssetInstanceName = FString();
-	}
 }
 
 FFlowComponentSaveData UFlowComponent::SaveInstance()

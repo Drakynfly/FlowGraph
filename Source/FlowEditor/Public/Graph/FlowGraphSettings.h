@@ -26,11 +26,6 @@ class UFlowGraphSettings final : public UDeveloperSettings
 	* Requires restart after making a change. */
 	UPROPERTY(EditAnywhere, config, Category = "Default UI")
 	bool bExposeFlowNodeCreation;
-	
-	/** Show Flow Asset toolbar?
-	* Requires restart after making a change. */
-	UPROPERTY(EditAnywhere, config, Category = "Default UI")
-	bool bShowAssetToolbarAboveLevelEditor;
 
 	UPROPERTY(EditAnywhere, config, Category = "Default UI")
 	FText FlowAssetCategoryName;
@@ -38,7 +33,7 @@ class UFlowGraphSettings final : public UDeveloperSettings
 	/** Flow Asset class allowed to be assigned via Level Editor toolbar*/
 	UPROPERTY(EditAnywhere, config, Category = "Default UI", meta = (EditCondition = "bShowAssetToolbarAboveLevelEditor"))
 	TSubclassOf<class UFlowAsset> WorldAssetClass;
-	
+
 	/** Hide specific nodes from the Flow Palette without changing the source code.
 	* Requires restart after making a change. */
 	UPROPERTY(EditAnywhere, config, Category = "Nodes")
@@ -74,7 +69,7 @@ class UFlowGraphSettings final : public UDeveloperSettings
 
 	UPROPERTY(config, EditAnywhere, Category = "Wires", meta = (EditCondition = "ConnectionDrawType == EFlowConnectionDrawType::Circuit"))
 	FVector2D CircuitConnectionSpacing;
-	
+
 	UPROPERTY(EditAnywhere, config, Category = "Wires")
 	FLinearColor InactiveWireColor;
 

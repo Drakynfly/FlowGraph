@@ -43,8 +43,6 @@ private:
 	void ModulesChangesCallback(FName ModuleName, EModuleChangeReason ReasonForChange);
 	void RegisterAssetIndexers() const;
 
-	void CreateFlowToolbar(FToolBarBuilder& ToolbarBuilder) const;
-
 public:
 	static TSharedRef<FFlowAssetEditor> CreateFlowAssetEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, UFlowAsset* FlowAsset);
 };

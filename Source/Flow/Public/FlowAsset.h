@@ -79,14 +79,14 @@ public:
 	static void SetFlowGraphInterface(TSharedPtr<IFlowGraphInterface> InFlowAssetEditor);
 	static TSharedPtr<IFlowGraphInterface> GetFlowGraphInterface() { return FlowGraphInterface; };
 #endif
-	// -- 
+	// --
 
 //////////////////////////////////////////////////////////////////////////
 // Nodes
 
 protected:
-	TArray<TSubclassOf<UFlowNode>> AllowedNodeClasses;	
-	TArray<TSubclassOf<UFlowNode>> DeniedNodeClasses;	
+	TArray<TSubclassOf<UFlowNode>> AllowedNodeClasses;
+	TArray<TSubclassOf<UFlowNode>> DeniedNodeClasses;
 
 private:
 	UPROPERTY()
@@ -200,7 +200,7 @@ public:
 	void InitializeInstance(const TWeakObjectPtr<UObject> InOwner, UFlowAsset* InTemplateAsset);
 
 	UFlowAsset* GetTemplateAsset() const { return TemplateAsset; }
-	
+
 	// Object that spawned Root Flow instance, i.e. World Settings or Player Controller
 	// This pointer is passed to child instances: Flow Asset instances created by the SubGraph nodes
 	UFUNCTION(BlueprintPure, Category = "Flow")
@@ -216,7 +216,7 @@ public:
 
 	virtual void PreStartFlow();
 	virtual void StartFlow();
-	
+
 	virtual void FinishFlow(const EFlowFinishPolicy InFinishPolicy);
 
 	// Get Flow Asset instance created by the given SubGraph node
@@ -252,7 +252,7 @@ public:
 
 //////////////////////////////////////////////////////////////////////////
 // SaveGame
-	
+
 	UFUNCTION(BlueprintCallable, Category = "SaveGame")
 	FFlowAssetSaveData SaveInstance(TArray<FFlowAssetSaveData>& SavedFlowInstances);
 
@@ -265,11 +265,11 @@ private:
 protected:
 	UFUNCTION(BlueprintNativeEvent, Category = "SaveGame")
 	void OnSave();
-	
+
 	UFUNCTION(BlueprintNativeEvent, Category = "SaveGame")
 	void OnLoad();
 
-public:	
+public:
 	UFUNCTION(BlueprintNativeEvent, Category = "SaveGame")
 	bool IsBoundToWorld();
 };
