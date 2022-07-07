@@ -69,7 +69,7 @@ class UFlowGraphSettings final : public UDeveloperSettings
 
 	UPROPERTY(config, EditAnywhere, Category = "Wires", meta = (EditCondition = "ConnectionDrawType == EFlowConnectionDrawType::Circuit"))
 	FVector2D CircuitConnectionSpacing;
-
+	
 	UPROPERTY(EditAnywhere, config, Category = "Wires")
 	FLinearColor InactiveWireColor;
 

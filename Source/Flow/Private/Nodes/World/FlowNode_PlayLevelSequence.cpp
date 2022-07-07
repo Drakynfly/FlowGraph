@@ -19,6 +19,7 @@ FFlowNodeLevelSequenceEvent UFlowNode_PlayLevelSequence::OnPlaybackCompleted;
 UFlowNode_PlayLevelSequence::UFlowNode_PlayLevelSequence(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 	, bPlayReverse(false)
+	, bUseGraphOwnerAsTransformOrigin(false)
 	, bApplyOwnerTimeDilation(true)
 	, LoadedSequence(nullptr)
 	, SequencePlayer(nullptr)
@@ -129,28 +130,34 @@ void UFlowNode_PlayLevelSequence::CreatePlayer()
 	{
 		ALevelSequenceActor* SequenceActor;
 
-		// Apply AActor::CustomTimeDilation from owner of the Root Flow
+		AActor* OwningActor = nullptr;
 		if (GetFlowAsset())
 		{
 			if (UObject* RootFlowOwner = GetFlowAsset()->GetOwner())
 			{
-				const AActor* OwningActor = Cast<AActor>(RootFlowOwner); // in case Root Flow was created directly from some actor
+				OwningActor = Cast<AActor>(RootFlowOwner); // in case Root Flow was created directly from some actor
 				if (OwningActor == nullptr)
 				{
-					if (const USceneComponent* OwningComponent = Cast<USceneComponent>(RootFlowOwner))
+					if (const UActorComponent* OwningComponent = Cast<UActorComponent>(RootFlowOwner))
 					{
 						OwningActor = OwningComponent->GetOwner();
 					}
 				}
-
-				if (IsValid(OwningActor))
-				{
-					PlaybackSettings.PlayRate = CachedPlayRate * OwningActor->CustomTimeDilation;
-				}
 			}
 		}
 
-		SequencePlayer = UFlowLevelSequencePlayer::CreateFlowLevelSequencePlayer(this, LoadedSequence, PlaybackSettings, CameraSettings, SequenceActor);
+		// Apply AActor::CustomTimeDilation from owner of the Root Flow
+		if (IsValid(OwningActor))
+		{
+			PlaybackSettings.PlayRate = CachedPlayRate * OwningActor->CustomTimeDilation;
+		}
+
+		// Apply Transform Origin
+		AActor* TransformOriginActor = bUseGraphOwnerAsTransformOrigin ? OwningActor : nullptr;
+
+		// Finally create the player
+		SequencePlayer = UFlowLevelSequencePlayer::CreateFlowLevelSequencePlayer(this, LoadedSequence, PlaybackSettings, CameraSettings, TransformOriginActor, SequenceActor);
+
 		if (SequencePlayer)
 		{
 			SequencePlayer->SetFlowEventReceiver(this);
@@ -222,7 +229,7 @@ void UFlowNode_PlayLevelSequence::OnLoad_Implementation()
 				SequencePlayer->OnFinished.AddDynamic(this, &UFlowNode_PlayLevelSequence::OnPlaybackFinished);
 
 				SequencePlayer->SetPlaybackPosition(FMovieSceneSequencePlaybackParams(ElapsedTime, EUpdatePositionMethod::Jump));
-				
+
 				// Take into account Play Rate set in the Playback Settings
 				SequencePlayer->SetPlayRate(TimeDilation * CachedPlayRate);
 

@@ -85,8 +85,10 @@ public:
 // Nodes
 
 protected:
-	TArray<TSubclassOf<UFlowNode>> AllowedNodeClasses;
+	TArray<TSubclassOf<UFlowNode>> AllowedNodeClasses;	
 	TArray<TSubclassOf<UFlowNode>> DeniedNodeClasses;
+
+	bool bStartNodePlacedAsGhostNode;
 
 private:
 	UPROPERTY()
@@ -252,7 +254,7 @@ public:
 
 //////////////////////////////////////////////////////////////////////////
 // SaveGame
-
+	
 	UFUNCTION(BlueprintCallable, Category = "SaveGame")
 	FFlowAssetSaveData SaveInstance(TArray<FFlowAssetSaveData>& SavedFlowInstances);
 
@@ -269,7 +271,7 @@ protected:
 	UFUNCTION(BlueprintNativeEvent, Category = "SaveGame")
 	void OnLoad();
 
-public:
+public:	
 	UFUNCTION(BlueprintNativeEvent, Category = "SaveGame")
 	bool IsBoundToWorld();
 };

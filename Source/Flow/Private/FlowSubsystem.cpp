@@ -413,10 +413,10 @@ void UFlowSubsystem::OnIdentityTagsRemoved(UFlowComponent* Component, const FGam
 	}
 }
 
-TSet<UFlowComponent*> UFlowSubsystem::GetFlowComponentsByTag(const FGameplayTag Tag, const TSubclassOf<UFlowComponent> ComponentClass) const
+TSet<UFlowComponent*> UFlowSubsystem::GetFlowComponentsByTag(const FGameplayTag Tag, const TSubclassOf<UFlowComponent> ComponentClass, const bool bExactMatch) const
 {
 	TArray<TWeakObjectPtr<UFlowComponent>> FoundComponents;
-	FlowComponentRegistry.MultiFind(Tag, FoundComponents);
+	FindComponents(Tag, bExactMatch, FoundComponents);
 
 	TSet<UFlowComponent*> Result;
 	for (const TWeakObjectPtr<UFlowComponent>& Component : FoundComponents)
@@ -430,10 +430,10 @@ TSet<UFlowComponent*> UFlowSubsystem::GetFlowComponentsByTag(const FGameplayTag 
 	return Result;
 }
 
-TSet<UFlowComponent*> UFlowSubsystem::GetFlowComponentsByTags(const FGameplayTagContainer Tags, const EGameplayContainerMatchType MatchType, const TSubclassOf<UFlowComponent> ComponentClass) const
+TSet<UFlowComponent*> UFlowSubsystem::GetFlowComponentsByTags(const FGameplayTagContainer Tags, const EGameplayContainerMatchType MatchType, const TSubclassOf<UFlowComponent> ComponentClass, const bool bExactMatch) const
 {
 	TSet<TWeakObjectPtr<UFlowComponent>> FoundComponents;
-	FindComponents(Tags, FoundComponents, MatchType);
+	FindComponents(Tags, MatchType, bExactMatch, FoundComponents);
 
 	TSet<UFlowComponent*> Result;
 	for (const TWeakObjectPtr<UFlowComponent>& Component : FoundComponents)
@@ -447,10 +447,10 @@ TSet<UFlowComponent*> UFlowSubsystem::GetFlowComponentsByTags(const FGameplayTag
 	return Result;
 }
 
-TSet<AActor*> UFlowSubsystem::GetFlowActorsByTag(const FGameplayTag Tag, const TSubclassOf<AActor> ActorClass) const
+TSet<AActor*> UFlowSubsystem::GetFlowActorsByTag(const FGameplayTag Tag, const TSubclassOf<AActor> ActorClass, const bool bExactMatch) const
 {
 	TArray<TWeakObjectPtr<UFlowComponent>> FoundComponents;
-	FlowComponentRegistry.MultiFind(Tag, FoundComponents);
+	FindComponents(Tag, bExactMatch, FoundComponents);
 
 	TSet<AActor*> Result;
 	for (const TWeakObjectPtr<UFlowComponent>& Component : FoundComponents)
@@ -464,10 +464,10 @@ TSet<AActor*> UFlowSubsystem::GetFlowActorsByTag(const FGameplayTag Tag, const T
 	return Result;
 }
 
-TSet<AActor*> UFlowSubsystem::GetFlowActorsByTags(const FGameplayTagContainer Tags, const EGameplayContainerMatchType MatchType, const TSubclassOf<AActor> ActorClass) const
+TSet<AActor*> UFlowSubsystem::GetFlowActorsByTags(const FGameplayTagContainer Tags, const EGameplayContainerMatchType MatchType, const TSubclassOf<AActor> ActorClass, const bool bExactMatch) const
 {
 	TSet<TWeakObjectPtr<UFlowComponent>> FoundComponents;
-	FindComponents(Tags, FoundComponents, MatchType);
+	FindComponents(Tags, MatchType, bExactMatch, FoundComponents);
 
 	TSet<AActor*> Result;
 	for (const TWeakObjectPtr<UFlowComponent>& Component : FoundComponents)
@@ -481,10 +481,10 @@ TSet<AActor*> UFlowSubsystem::GetFlowActorsByTags(const FGameplayTagContainer Ta
 	return Result;
 }
 
-TMap<AActor*, UFlowComponent*> UFlowSubsystem::GetFlowActorsAndComponentsByTag(const FGameplayTag Tag, const TSubclassOf<AActor> ActorClass) const
+TMap<AActor*, UFlowComponent*> UFlowSubsystem::GetFlowActorsAndComponentsByTag(const FGameplayTag Tag, const TSubclassOf<AActor> ActorClass, const bool bExactMatch) const
 {
 	TArray<TWeakObjectPtr<UFlowComponent>> FoundComponents;
-	FlowComponentRegistry.MultiFind(Tag, FoundComponents);
+	FindComponents(Tag, bExactMatch, FoundComponents);
 
 	TMap<AActor*, UFlowComponent*> Result;
 	for (const TWeakObjectPtr<UFlowComponent>& Component : FoundComponents)
@@ -498,10 +498,10 @@ TMap<AActor*, UFlowComponent*> UFlowSubsystem::GetFlowActorsAndComponentsByTag(c
 	return Result;
 }
 
-TMap<AActor*, UFlowComponent*> UFlowSubsystem::GetFlowActorsAndComponentsByTags(const FGameplayTagContainer Tags, const EGameplayContainerMatchType MatchType, const TSubclassOf<AActor> ActorClass) const
+TMap<AActor*, UFlowComponent*> UFlowSubsystem::GetFlowActorsAndComponentsByTags(const FGameplayTagContainer Tags, const EGameplayContainerMatchType MatchType, const TSubclassOf<AActor> ActorClass, const bool bExactMatch) const
 {
 	TSet<TWeakObjectPtr<UFlowComponent>> FoundComponents;
-	FindComponents(Tags, FoundComponents, MatchType);
+	FindComponents(Tags, MatchType, bExactMatch, FoundComponents);
 
 	TMap<AActor*, UFlowComponent*> Result;
 	for (const TWeakObjectPtr<UFlowComponent>& Component : FoundComponents)
@@ -515,14 +515,32 @@ TMap<AActor*, UFlowComponent*> UFlowSubsystem::GetFlowActorsAndComponentsByTags(
 	return Result;
 }
 
-void UFlowSubsystem::FindComponents(const FGameplayTagContainer& Tags, TSet<TWeakObjectPtr<UFlowComponent>>& OutComponents, const EGameplayContainerMatchType MatchType) const
+void UFlowSubsystem::FindComponents(const FGameplayTag& Tag, const bool bExactMatch, TArray<TWeakObjectPtr<UFlowComponent>>& OutComponents) const
+{
+	if (bExactMatch)
+	{
+		FlowComponentRegistry.MultiFind(Tag, OutComponents);
+	}
+	else
+	{
+		for (TMultiMap<FGameplayTag, TWeakObjectPtr<UFlowComponent>>::TConstIterator It(FlowComponentRegistry); It; ++It)
+		{
+			if (It.Key().MatchesTag(Tag))
+			{
+				OutComponents.Emplace(It.Value());
+			}
+		}
+	}
+}
+
+void UFlowSubsystem::FindComponents(const FGameplayTagContainer& Tags, const EGameplayContainerMatchType MatchType, const bool bExactMatch, TSet<TWeakObjectPtr<UFlowComponent>>& OutComponents) const
 {
 	if (MatchType == EGameplayContainerMatchType::Any)
 	{
 		for (const FGameplayTag& Tag : Tags)
 		{
 			TArray<TWeakObjectPtr<UFlowComponent>> ComponentsPerTag;
-			FlowComponentRegistry.MultiFind(Tag, ComponentsPerTag);
+			FindComponents(Tag, bExactMatch, ComponentsPerTag);
 			OutComponents.Append(ComponentsPerTag);
 		}
 	}
@@ -532,7 +550,7 @@ void UFlowSubsystem::FindComponents(const FGameplayTagContainer& Tags, TSet<TWea
 		for (const FGameplayTag& Tag : Tags)
 		{
 			TArray<TWeakObjectPtr<UFlowComponent>> ComponentsPerTag;
-			FlowComponentRegistry.MultiFind(Tag, ComponentsPerTag);
+			FindComponents(Tag, bExactMatch, ComponentsPerTag);
 			ComponentsWithAnyTag.Append(ComponentsPerTag);
 		}
 
