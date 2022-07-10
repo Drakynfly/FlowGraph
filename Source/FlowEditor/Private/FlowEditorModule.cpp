@@ -9,7 +9,6 @@
 #include "Asset/FlowAssetIndexer.h"
 #include "Graph/FlowGraphConnectionDrawingPolicy.h"
 #include "Graph/FlowGraphSettings.h"
-#include "LevelEditor/SLevelEditorFlow.h"
 #include "MovieScene/FlowTrackEditor.h"
 #include "Nodes/AssetTypeActions_FlowNodeBlueprint.h"
 #include "Nodes/Customizations/FlowNode_Details.h"
@@ -102,7 +101,7 @@ void FFlowEditorModule::ShutdownModule()
 			}
 		}
 	}
-	
+
 	FModuleManager::Get().OnModulesChanged().Remove(ModulesChangedHandle);
 }
 
@@ -169,24 +168,6 @@ void FFlowEditorModule::RegisterAssetIndexers() const
 	 */
 	//IAssetSearchModule::Get().RegisterAssetIndexer(UFlowAsset::StaticClass(), MakeUnique<FFlowAssetIndexer>());
 }
-
-void FFlowEditorModule::CreateFlowToolbar(FToolBarBuilder& ToolbarBuilder) const
-{
-	ToolbarBuilder.BeginSection("Flow");
-	{
-		RegisterAssetIndexers();
-	}
-}
-
-void FFlowEditorModule::RegisterAssetIndexers() const
-{
-	/**
-	 * Documentation: https://github.com/MothCocoon/FlowGraph/wiki/Asset-Search
-	 * Uncomment line below, if you made these changes to the engine: https://github.com/EpicGames/UnrealEngine/pull/9070
-	 */
-	//IAssetSearchModule::Get().RegisterAssetIndexer(UFlowAsset::StaticClass(), MakeUnique<FFlowAssetIndexer>());
-}
-
 
 TSharedRef<FFlowAssetEditor> FFlowEditorModule::CreateFlowAssetEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, UFlowAsset* FlowAsset)
 {

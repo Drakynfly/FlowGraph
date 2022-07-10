@@ -347,16 +347,6 @@ void UFlowComponent::OnRep_NotifyTagsFromAnotherComponent()
 	}
 }
 
-UFlowAsset* UFlowComponent::GetRootFlowInstance()
-{
-	if (const UFlowSubsystem* FlowSubsystem = GetFlowSubsystem())
-	{
-		return FlowSubsystem->GetRootFlow(this);
-	}
-
-	return nullptr;
-}
-
 FFlowComponentSaveData UFlowComponent::SaveInstance()
 {
 	FFlowComponentSaveData ComponentRecord;

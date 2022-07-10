@@ -265,15 +265,12 @@ void UFlowGraphSchema::GetFlowNodeActions(FGraphActionMenuBuilder& ActionMenuBui
 		GatherFlowNodes();
 	}
 
-	// get actual asset type, as it might limit which nodes are placeable 
-	const UFlowAsset* AssetClassDefaults = AssetClass->GetDefaultObject<UFlowAsset>();
-
 	TArray<UFlowNode*> FlowNodes;
 	FlowNodes.Reserve(NativeFlowNodes.Num() + BlueprintFlowNodes.Num());
 
 	for (const UClass* FlowNodeClass : NativeFlowNodes)
 	{
-		// Flow Asset type might limit which nodes are placeable 
+		// Flow Asset type might limit which nodes are placeable
 		if (IsClassContained(AssetClassDefaults->DeniedNodeClasses, FlowNodeClass))
 		{
 			continue;

@@ -64,6 +64,16 @@ void UFlowGraphComponent::FinishRootFlow(const EFlowFinishPolicy FinishPolicy)
 	}
 }
 
+UFlowAsset* UFlowGraphComponent::GetRootFlowInstance()
+{
+	if (const UFlowSubsystem* FlowSubsystem = GetFlowSubsystem())
+	{
+		return FlowSubsystem->GetRootFlow(this);
+	}
+
+	return nullptr;
+}
+
 void UFlowGraphComponent::SaveRootFlow(TArray<FFlowAssetSaveData>& SavedFlowInstances)
 {
 	if (UFlowAsset* FlowAssetInstance = GetRootFlowInstance())

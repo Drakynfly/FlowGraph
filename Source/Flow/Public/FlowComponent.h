@@ -171,13 +171,6 @@ private:
 	void OnRep_NotifyTagsFromAnotherComponent();
 
 //////////////////////////////////////////////////////////////////////////
-// Root Flow
-
-protected:
-	UFUNCTION(BlueprintPure, Category = "RootFlow")
-	UFlowAsset* GetRootFlowInstance();
-
-//////////////////////////////////////////////////////////////////////////
 // SaveGame
 
 	UFUNCTION(BlueprintCallable, Category = "SaveGame")

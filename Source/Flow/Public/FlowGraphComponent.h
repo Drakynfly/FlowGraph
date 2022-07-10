@@ -62,6 +62,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Root Flow")
 	void FinishRootFlow(const EFlowFinishPolicy FinishPolicy);
 
+protected:
+	UFUNCTION(BlueprintPure, Category = "RootFlow")
+	UFlowAsset* GetRootFlowInstance();
+
 //////////////////////////////////////////////////////////////////////////
 // SaveGame
 
