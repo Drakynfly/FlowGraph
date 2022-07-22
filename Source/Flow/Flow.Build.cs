@@ -7,13 +7,14 @@ public class Flow : ModuleRules
 	public Flow(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+		bUseUnity = false;
 
-		PublicDependencyModuleNames.AddRange(new[] 
+		PublicDependencyModuleNames.AddRange(new[]
 		{
 			"LevelSequence"
 		});
-		
-		PrivateDependencyModuleNames.AddRange(new[] 
+
+		PrivateDependencyModuleNames.AddRange(new[]
 		{
             "Core",
 			"CoreUObject",
