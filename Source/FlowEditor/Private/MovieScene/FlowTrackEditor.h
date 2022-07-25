@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Sequencer/Public/ISequencer.h"
 #include "MovieSceneTrack.h"
 #include "ISequencerSection.h"

@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
 #include "Serialization/BufferArchive.h"
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
@@ -92,7 +91,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = "Flow")
 	TArray<FFlowAssetSaveData> FlowInstances;
-	
+
 	friend FArchive& operator<<(FArchive& Ar, UFlowSaveGame& SaveGame)
 	{
 		Ar << SaveGame.FlowComponents;

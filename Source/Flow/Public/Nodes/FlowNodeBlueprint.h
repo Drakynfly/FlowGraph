@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Engine/Blueprint.h"
 #include "FlowNodeBlueprint.generated.h"
 

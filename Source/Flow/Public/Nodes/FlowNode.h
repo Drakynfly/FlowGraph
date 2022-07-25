@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "EdGraph/EdGraphNode.h"
 #include "Engine/StreamableManager.h"
 #include "GameplayTagContainer.h"
@@ -52,7 +51,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "FlowNode")
 	bool bNodeDeprecated;
-	
+
 	// If this node is deprecated, it might be replaced by another node
 	UPROPERTY(EditDefaultsOnly, Category = "FlowNode")
 	TSubclassOf<UFlowNode> ReplacedBy;
@@ -63,7 +62,7 @@ public:
 
 public:
 #if WITH_EDITOR
-	// UObject	
+	// UObject
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 	virtual void PostLoad() override;
 	// --
@@ -80,7 +79,7 @@ public:
 	virtual FString GetNodeCategory() const;
 	virtual FText GetNodeTitle() const;
 	virtual FText GetNodeToolTip() const;
-	
+
 	// This method allows to have different for every node instance, i.e. Red if node represents enemy, Green if node represents a friend
 	virtual bool GetDynamicTitleColor(FLinearColor& OutColor) const { return false; }
 
@@ -202,7 +201,7 @@ protected:
 
 	UPROPERTY(SaveGame)
 	EFlowNodeState ActivationState;
-	
+
 #if !UE_BUILD_SHIPPING
 private:
 	TMap<FName, TArray<FPinRecord>> InputRecords;
@@ -358,7 +357,7 @@ public:
 protected:
 	UFUNCTION(BlueprintNativeEvent, Category = "FlowNode")
 	void OnSave();
-	
+
 	UFUNCTION(BlueprintNativeEvent, Category = "FlowNode")
 	void OnLoad();
 

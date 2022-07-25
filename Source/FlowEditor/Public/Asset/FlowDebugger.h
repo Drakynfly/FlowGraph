@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-
 /**
 ** Minimalistic form of breakpoint debugger
 ** See BehaviorTreeDebugger for a more complex example
