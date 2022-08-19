@@ -17,7 +17,7 @@ UCLASS(Abstract, NotBlueprintable)
 class FLOW_API UFlowNode_ComponentObserver : public UFlowNode
 {
 	GENERATED_UCLASS_BODY()
-	
+
 	friend class FFlowNode_ComponentObserverDetails;
 
 protected:
@@ -41,8 +41,6 @@ protected:
 	TMap<TWeakObjectPtr<AActor>, TWeakObjectPtr<UFlowComponent>> RegisteredActors;
 
 protected:
-	virtual void PostLoad() override;
-
 	virtual void ExecuteInput(const FName& PinName) override;
 	virtual void OnLoad_Implementation() override;
 
@@ -74,8 +72,4 @@ public:
 	virtual FString GetNodeDescription() const override;
 	virtual FString GetStatusString() const override;
 #endif
-
-private:
-	UPROPERTY()
-	FGameplayTag IdentityTag_DEPRECATED;
 };
