@@ -41,7 +41,7 @@ private:
 	UPROPERTY()
 	TArray<UFlowAsset*> InstancedTemplates;
 
-	// Assets instanced by object from another system, i.e. Game State or Player Controller
+	/* Assets instanced by object from another system, i.e. World Settings or Player Controller */
 	UPROPERTY()
 	TMap<TWeakObjectPtr<UObject>, UFlowAsset*> RootInstances;
 
