@@ -58,6 +58,7 @@ void UFlowComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	if (UFlowSubsystem* FlowSubsystem = GetFlowSubsystem())
 	{
+		FlowSubsystem->FinishAllRootFlows(this, EFlowFinishPolicy::Keep);
 		FlowSubsystem->UnregisterComponent(this);
 	}
 

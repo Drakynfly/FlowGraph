@@ -11,6 +11,7 @@ UFlowGraphSettings::UFlowGraphSettings(const FObjectInitializer& ObjectInitializ
 	, bExposeFlowAssetCreation(true)
 	, bExposeFlowNodeCreation(true)
 	, FlowAssetCategoryName(LOCTEXT("FlowAssetCategory", "Flow"))
+	, DefaultFlowAssetClass(UFlowAsset::StaticClass())
 	, WorldAssetClass(UFlowAsset::StaticClass())
 	, bShowDefaultPinNames(false)
 	, ExecPinColorModifier(0.75f, 0.75f, 0.75f, 1.0f)

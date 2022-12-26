@@ -101,7 +101,7 @@ public:
 
 public:
 	void VerifyIdentityTags() const;
-		
+
 	UFUNCTION(BlueprintCallable, Category = "Flow")
 	void LogError(FString Message, const EFlowOnScreenMessageType OnScreenMessageType = EFlowOnScreenMessageType::Permanent) const;
 

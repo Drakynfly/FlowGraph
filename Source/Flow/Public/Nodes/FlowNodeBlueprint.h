@@ -8,7 +8,6 @@
 /**
  * A specialized blueprint class required for customizing Asset Type Actions
  */
-
 UCLASS(BlueprintType)
 class FLOW_API UFlowNodeBlueprint : public UBlueprint
 {
@@ -19,8 +18,6 @@ class FLOW_API UFlowNodeBlueprint : public UBlueprint
 	virtual bool SupportedByDefaultBlueprintFactory() const override { return false; }
 
 	virtual bool SupportsDelegates() const override { return false; }
-	virtual bool SupportsEventGraphs() const override { return false; }
-	virtual bool SupportsAnimLayers() const override { return false; }
 	// --
 #endif
 };

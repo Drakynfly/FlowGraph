@@ -9,6 +9,9 @@
 #include "Toolkits/IToolkitHost.h"
 #include "UObject/GCObject.h"
 
+#include "FlowEditorDefines.h"
+#include "FlowTypes.h"
+
 class SFlowPalette;
 class UFlowAsset;
 class UFlowGraphNode;
@@ -21,8 +24,9 @@ struct FSlateBrush;
 struct FPropertyChangedEvent;
 struct Rect;
 
-class FFlowAssetEditor : public FAssetEditorToolkit, public FEditorUndoClient, public FGCObject, public FNotifyHook
+class FLOWEDITOR_API FFlowAssetEditor : public FAssetEditorToolkit, public FEditorUndoClient, public FGCObject, public FNotifyHook
 {
+protected:
 	/** The FlowAsset asset being inspected */
 	UFlowAsset* FlowAsset;
 
@@ -92,8 +96,8 @@ protected:
 
 	virtual void BindToolbarCommands();
 	virtual void RefreshAsset();
-	virtual void GoToMasterInstance();
-	virtual bool CanGoToMasterInstance();
+	virtual void GoToParentInstance();
+	virtual bool CanGoToParentInstance();
 
 	virtual void CreateWidgets();
 
@@ -134,6 +138,12 @@ protected:
 
 public:
 	virtual void SelectSingleNode(UEdGraphNode* Node) const;
+
+#if ENABLE_JUMP_TO_INNER_OBJECT
+	// FAssetEditorToolkit
+	virtual void JumpToInnerObject(UObject* InnerObject) override;
+	// --
+#endif	
 
 protected:
 	virtual void SelectAllNodes() const;
@@ -204,6 +214,9 @@ private:
 
 	bool CanToggleBreakpoint() const;
 	bool CanTogglePinBreakpoint() const;
+
+	void SetSignalMode(const EFlowSignalMode Mode) const;
+	bool CanSetSignalMode(const EFlowSignalMode Mode) const;
 
 	void OnForcePinActivation() const;
 	

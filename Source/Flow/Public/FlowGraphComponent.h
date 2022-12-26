@@ -35,19 +35,19 @@ protected:
 
 public:
 	// Asset that might instantiated as "Root Flow"
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Root Flow")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RootFlow")
 	UFlowAsset* RootFlow;
 
 	// If true, component will start Root Flow on Begin Play
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Root Flow")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "RootFlow")
 	bool bAutoStartRootFlow;
 
 	// Networking mode for creating this Root Flow
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Root Flow")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "RootFlow")
 	EFlowNetMode RootFlowMode;
 
 	// If false, another Root Flow instance won't be created from this component, if this Flow Asset is already instantiated
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Root Flow")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "RootFlow")
 	bool bAllowMultipleInstances;
 
 	UPROPERTY(SaveGame)
@@ -55,16 +55,18 @@ public:
 
 	// This will instantiate Flow Asset assigned on this component.
 	// Created Flow Asset instance will be a "root flow", as additional Flow Assets can be instantiated via Sub Graph node
-	UFUNCTION(BlueprintCallable, Category = "Root Flow")
+	UFUNCTION(BlueprintCallable, Category = "RootFlow")
 	void StartRootFlow();
 
 	// This will destroy instantiated Flow Asset - created from asset assigned on this component.
-	UFUNCTION(BlueprintCallable, Category = "Root Flow")
-	void FinishRootFlow(const EFlowFinishPolicy FinishPolicy);
+	UFUNCTION(BlueprintCallable, Category = "RootFlow")
+	void FinishRootFlow(UFlowAsset* TemplateAsset, const EFlowFinishPolicy FinishPolicy);
 
-protected:
 	UFUNCTION(BlueprintPure, Category = "RootFlow")
-	UFlowAsset* GetRootFlowInstance();
+	TSet<UFlowAsset*> GetRootInstances(const UObject* Owner) const;
+
+	UFUNCTION(BlueprintPure, Category = "RootFlow", meta = (DeprecatedFunction, DeprecationMessage="Use GetRootInstances() instead."))
+	UFlowAsset* GetRootFlowInstance() const;
 
 //////////////////////////////////////////////////////////////////////////
 // SaveGame
