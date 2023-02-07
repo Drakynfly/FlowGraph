@@ -7,7 +7,6 @@ public class FlowEditor : ModuleRules
     public FlowEditor(ReadOnlyTargetRules Target) : base(Target)
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-        bUseUnity = false;
 
         PublicDependencyModuleNames.AddRange(new[]
         {
