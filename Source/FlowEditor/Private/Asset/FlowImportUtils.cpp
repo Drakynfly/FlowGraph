@@ -92,7 +92,7 @@ void UFlowImportUtils::ImportBlueprintGraph(UBlueprint* Blueprint, UFlowAsset* F
 		return;
 	}
 
-	FScopedSlowTask ExecuteAssetTask(BlueprintGraph->Nodes.Num(), FText::Format(LOCTEXT("FFlowGraphUtils::ImportBlueprintGraph", "Reading {0}"), FText::FromString(Blueprint->GetFriendlyName())));
+	FScopedSlowTask ExecuteAssetTask(BlueprintGraph->Nodes.Num(), FText::Format(LOCTEXT("ImportBlueprintGraph_Reading", "Reading {0}"), FText::FromString(Blueprint->GetFriendlyName())));
 	ExecuteAssetTask.MakeDialog();
 
 	TMap<FGuid, FImportedGraphNode> SourceNodes;
@@ -100,7 +100,7 @@ void UFlowImportUtils::ImportBlueprintGraph(UBlueprint* Blueprint, UFlowAsset* F
 
 	for (UEdGraphNode* ThisNode : BlueprintGraph->Nodes)
 	{
-		ExecuteAssetTask.EnterProgressFrame(1, FText::Format(LOCTEXT("FFlowGraphUtils::ImportBlueprintGraph", "Processing blueprint node: {0}"), ThisNode->GetNodeTitle(ENodeTitleType::ListView)));
+		ExecuteAssetTask.EnterProgressFrame(1, FText::Format(LOCTEXT("ImportBlueprintGraph_Processing", "Processing blueprint node: {0}"), ThisNode->GetNodeTitle(ENodeTitleType::ListView)));
 
 		// non-pure K2Nodes or UK2Node_Knot
 		const UK2Node* K2Node = Cast<UK2Node>(ThisNode);
