@@ -3,15 +3,12 @@
 #include "DetailCustomizations/FlowOwnerFunctionRefCustomization.h"
 
 #include "FlowAsset.h"
-#include "FlowOwnerInterface.h"
+#include "Interfaces/FlowOwnerInterface.h"
 #include "Nodes/FlowNode.h"
 #include "Nodes/World/FlowNode_CallOwnerFunction.h"
 
 #include "UObject/UnrealType.h"
-#include "FlowOwnerFunctionParams.h"
-
-
-// FFlowOwnerFunctionRefCustomization Implementation
+#include "Types/FlowOwnerFunctionParams.h"
 
 void FFlowOwnerFunctionRefCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> InStructPropertyHandle, IDetailChildrenBuilder& StructBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
@@ -52,14 +49,19 @@ TArray<FName> FFlowOwnerFunctionRefCustomization::GetCuratedNameOptions() const
 const UClass* FFlowOwnerFunctionRefCustomization::TryGetExpectedOwnerClass() const
 {
 	const UFlowNode* NodeOwner = TryGetFlowNodeOuter();
-	const UFlowNode_CallOwnerFunction* CallOwnerFunctionNode = Cast<UFlowNode_CallOwnerFunction>(NodeOwner);
-
-	if (IsValid(CallOwnerFunctionNode))
+	if (!IsValid(NodeOwner))
 	{
-		return CallOwnerFunctionNode->TryGetExpectedOwnerClass();
+		return nullptr;
 	}
 
-	return nullptr;
+	const UFlowAsset* FlowAsset = NodeOwner->GetFlowAsset();
+	if (!IsValid(FlowAsset))
+	{
+		return nullptr;
+	}
+
+	UClass* ExpectedOwnerClass = FlowAsset->GetExpectedOwnerClass();
+	return ExpectedOwnerClass;
 }
 
 TArray<FName> FFlowOwnerFunctionRefCustomization::GetFlowOwnerFunctionRefs(
@@ -69,8 +71,19 @@ TArray<FName> FFlowOwnerFunctionRefCustomization::GetFlowOwnerFunctionRefs(
 	TArray<FName> ValidFunctionNames;
 
 	// Gather a list of potential functions
-	TArray<FName> PotentialFunctionNames;
-	ExpectedOwnerClass.GenerateFunctionList(PotentialFunctionNames);
+	TSet<FName> PotentialFunctionNames;
+
+	const UClass* CurClass = &ExpectedOwnerClass;
+	while (IsValid(CurClass))
+	{
+		TArray<FName> CurClassFunctionNames;
+		CurClass->GenerateFunctionList(CurClassFunctionNames);
+
+		PotentialFunctionNames.Append(CurClassFunctionNames);
+
+		// Recurse to include all of the Super(s) names
+		CurClass = CurClass->GetSuperClass();
+	}
 
 	if (PotentialFunctionNames.Num() == 0)
 	{
@@ -101,19 +114,7 @@ bool FFlowOwnerFunctionRefCustomization::IsFunctionUsable(const UFunction& Funct
 		return false;
 	}
 
-	if (!DoesFunctionHaveExpectedParamType(Function, FlowNodeOwner))
-	{
-		return false;
-	}
-
 	return true;
-}
-
-bool FFlowOwnerFunctionRefCustomization::DoesFunctionHaveExpectedParamType(const UFunction& Function, const UFlowNode_CallOwnerFunction& FlowNodeOwner)
-{
-	const UClass* PropertyClass = UFlowNode_CallOwnerFunction::GetParamsClassForFunction(Function);
-
-	return FlowNodeOwner.IsAcceptableParamsPropertyClass(PropertyClass);
 }
 
 void FFlowOwnerFunctionRefCustomization::SetCuratedName(const FName& NewFunctionName)
@@ -125,16 +126,18 @@ void FFlowOwnerFunctionRefCustomization::SetCuratedName(const FName& NewFunction
 	FunctionNameHandle->SetPerObjectValue(0, NewFunctionName.ToString());
 }
 
-FName FFlowOwnerFunctionRefCustomization::GetCuratedName() const
+bool FFlowOwnerFunctionRefCustomization::TryGetCuratedName(FName& OutName) const
 {
 	const FFlowOwnerFunctionRef* FlowOwnerFunction = GetFlowOwnerFunctionRef();
 	if (FlowOwnerFunction)
 	{
-		return FlowOwnerFunction->FunctionName;
+		OutName = FlowOwnerFunction->FunctionName;
+
+		return true;
 	}
 	else
 	{
-		return NAME_None;
+		return false;
 	}
 }
 
